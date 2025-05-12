@@ -21,7 +21,7 @@ Integration with External Data: Scrapes content from reliable Jewish educational
 Responsive Design: Optimized for both desktop and mobile users, ensuring accessibility and usability across devices.
 
 Dynamic Weekly Torah Portion: Automatically fetches and displays the Torah portion for the week.
-
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Installation
 To get started with AI-Amen, follow these steps:
 
@@ -29,13 +29,17 @@ Clone the repository:
 
 git clone https://github.com/yoad-hordan4/AI-Amen.git
 cd AI-Amen
+
 Set up a virtual environment:
 
 python3 -m venv venv
 source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-Install dependencies:
 
-install requirements:
+create .env file and in it add the line:
+OPENAI_API_KEY="API-Key"
+(replace the API-Key with the actual one You were given if you are on the team)
+
+Install dependencies:
 pip install -r requirements.txt
 
 Run the application:
