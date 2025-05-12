@@ -1,0 +1,13 @@
+<div class="result">
+    <h2>Answer:</h2>
+    <p>{{ answer }}</p>
+  
+    <h3>Sources:</h3>
+    <ul>
+      {% for source in sources %}
+        <li><a href="https://{{ source }}" target="_blank">{{ source }}</a></li>
+      {% endfor %}
+    </ul>
+  
+    <p><strong>Confidence:</strong> {{ confidence }}</p>
+</div>
