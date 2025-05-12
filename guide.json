@@ -1,0 +1,16 @@
+{
+    "schema_version": "v1",
+    "name_for_human": "Orthodox Judaism Halacha Guide",
+    "name_for_model": "orthodox_halacha_guide",
+    "description_for_human": "Ask halachic questions and get Orthodox Jewish answers.",
+    "description_for_model": "Plugin for answering Orthodox Jewish halachic questions with denominational nuance.",
+    "auth": { "type": "none" },
+    "api": {
+      "type": "openapi",
+      "url": "https://yourdomain.com/openapi.json"
+    },
+    "logo_url": "https://yourdomain.com/logo.png",
+    "contact_email": "your@email.com",
+    "legal_info_url": "https://yourdomain.com/legal"
+  }
+  
