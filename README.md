@@ -35,7 +35,8 @@ Set up a virtual environment:
 python3 -m venv venv
 source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 
-create .env file and in it add the line:
+create .env file in the directory and in it add the line:
+
 OPENAI_API_KEY="API-Key"
 (replace the API-Key with the actual one You were given if you are on the team)
 
@@ -48,6 +49,10 @@ Visit http://127.0.0.1:8000 in your browser.
 
 Usage
 Once the app is up and running, visit the homepage (http://127.0.0.1:8000/) to view the weekly Torah portion and other related content.
+
+THATS IT!! YOU SHOULD BE ABLE TO ASK ANYTHING YOU WANT NOW LIKE YOU'RE TALKING TO YOUR RABBI!!!
+
+--------------------------------------------------------------------------------------------------------------------------------------------
 
 Tech Stack
 Backend: FastAPI, Uvicorn
@@ -89,6 +94,6 @@ Distributed under the MIT License. See LICENSE for more information.
 
 Contact
 For more information or inquiries, you can reach out to:
-Email: [your-email@example.com]
+Email: [yoadh4@gmail.com]
 
 This README file should cover all the major details about your project. You can always modify and extend it as you add more features to the app!
