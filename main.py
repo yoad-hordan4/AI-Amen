@@ -27,8 +27,10 @@ async def api_ask_halacha(request: Request, user_question: str = Form(...), comm
     })
 
 @app.post("/api/weekly", response_class=HTMLResponse)
-async def api_get_weekly(request: Request, user_question: str = Form(...), community: str = Form(...)):
+async def api_get_weekly(request: Request):
     result = get_weekly_reading()
     return templates.TemplateResponse("weekly_section.html", {
-        "weekly_reading": result["weekly_reading"]  # Pass the correct key here
+        "request": request,
+        "weekly_reading": result.get("weekly_reading", "Error fetching weekly portion")
     })
+

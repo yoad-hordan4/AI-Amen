@@ -1,9 +1,17 @@
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
-import re
 import requests
+from datetime import date
+from dateutil.parser import isoparse
 from bs4 import BeautifulSoup
+
+import requests
+import logging
+from datetime import date, datetime
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))  # Use env variable instead of hardcoded key
@@ -26,6 +34,43 @@ def extract_citations(text: str) -> list:
     if "shulchan aruch" in text.lower():
         sources.append("sefaria.org (Shulchan Aruch)")
     return list(set(sources))
+
+def find_portion():
+    url = (
+        "https://www.hebcal.com/hebcal?v=1&cfg=json&maj=on&min=on&mod=on&nx=on"
+        "&year=now&month=x&ss=on&mf=on&c=on&geo=geoname&geonameid=3448439&M=on&s=on"
+    )
+
+    try:
+        resp = requests.get(url, timeout=10)
+        resp.raise_for_status()
+    except requests.RequestException as e:
+        logger.error(f"Failed to fetch Hebcal JSON: {e}")
+        raise ValueError(f"Could not reach Hebcal API ({e})")
+
+    data = resp.json()
+    items = data.get("items")
+    if not items:
+        logger.error(f"No 'items' in Hebcal response: {data}")
+        raise ValueError("Hebcal response malformed")
+
+    today = date.today()
+    for item in items:
+        if item.get("category") == "parashat":
+            # Parse ISO date without external libraries
+            try:
+                item_date = datetime.fromisoformat(item["date"]).date()
+            except Exception:
+                logger.warning(f"Skipping unparsable date: {item.get('date')}")
+                continue
+
+            if item_date >= today:
+                title = item.get("title", "")
+                hebrew = item.get("hebrew", "")
+                return f"{title}{' – ' + hebrew if hebrew else ''}"
+
+    raise ValueError("No upcoming parsha found in Hebcal data")
+
 
 def get_halachic_answer(question: str, affiliation: str) -> dict:
     try:
@@ -64,7 +109,7 @@ def get_halachic_answer(question: str, affiliation: str) -> dict:
     except Exception as e:
         return {"error": f"An error occurred: {str(e)}"}
 
-def find_portion():
+#def find_portion():
     url = "https://aish.com/weekly-torah-portion"
     response = requests.get(url)
     if response.status_code == 200:
@@ -81,10 +126,15 @@ def find_portion():
     else:
         return "Portion not found"
 
+
 def get_weekly_reading():
     try:
-        # This is a placeholder. You would replace this with actual logic to get the weekly reading.
-        weekly_reading = "This week's Torah portion is: " + find_portion()
-        return {"weekly_reading": weekly_reading}
-    except Exception as e:
-        return {"error": f"An error occurred: {str(e)}"}
+        portion = find_portion()
+        return {"weekly_reading": f"This week’s Torah portion is: {portion}"}
+    except ValueError as ve:
+        return {"error": str(ve)}
+    except Exception:
+        logger.exception("Unexpected error in get_weekly_reading")
+        return {"error": "Unexpected error fetching weekly portion"}
+
+
