@@ -119,8 +119,8 @@ def get_halachic_answer(question: str, affiliation: str) -> dict:
     try:
         prompt = (
             f"You are a halachic assistant. Use certified sources only from {sources}. "
-            f"Answer the following question from a {affiliation} perspective. "
-            f"Provide a concise answer with clear citations, and try to use bullet points where helpful.\n\n"
+            f"Answer **only** from the {affiliation} perspective and **do not** mention or compare other customs. "
+            "Provide a concise, bullet-pointed answer with clear citations.\n\n"
             f"Question: {question}"
         )
 
