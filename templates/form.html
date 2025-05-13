@@ -28,6 +28,8 @@
     <!-- Practice Stream Selection -->
     <div id="practice-screen" style="display:none">
       <h2>Select Your Practice Stream</h2>
+      <!-- Show chosen affiliation -->
+      <p><strong>Affiliation:</strong> <span id="display-affiliation"></span></p>
       <select id="practice-select">
         <option value="" disabled selected>-- Choose practice --</option>
         <option value="Ashkenazi">Ashkenazi</option>
@@ -38,6 +40,10 @@
 
     <!-- Main App Screen -->
     <div id="app-screen" style="display:none">
+      <!-- Show chosen settings -->
+      <p><strong>Affiliation:</strong> <span id="app-affiliation"></span> |
+         <strong>Practice Stream:</strong> <span id="app-practice"></span></p>
+
       <!-- Weekly Portion Display -->
       <div class="result" id="weekly-portion">
         {% if parsha %}
@@ -71,27 +77,32 @@
     const practiceScreen = document.getElementById('practice-screen');
     const appScreen = document.getElementById('app-screen');
 
+    let selectedAff = '';
+    let selectedPractice = '';
+
     document.getElementById('start-btn').addEventListener('click', () => {
       welcome.style.display = 'none';
       affScreen.style.display = 'block';
     });
 
     document.getElementById('aff-next-btn').addEventListener('click', () => {
-      const aff = document.getElementById('affiliation-select').value;
-      if (!aff) return alert('Please choose an affiliation.');
-      document.getElementById('community').value = aff;
+      selectedAff = document.getElementById('affiliation-select').value;
+      if (!selectedAff) return alert('Please choose an affiliation.');
+      document.getElementById('community').value = selectedAff;
+      document.getElementById('display-affiliation').textContent = selectedAff;
       affScreen.style.display = 'none';
       practiceScreen.style.display = 'block';
     });
 
     document.getElementById('practice-next-btn').addEventListener('click', () => {
-      const prac = document.getElementById('practice-select').value;
-      if (!prac) return alert('Please choose a practice stream.');
-      document.getElementById('practice').value = prac;
+      selectedPractice = document.getElementById('practice-select').value;
+      if (!selectedPractice) return alert('Please choose a practice stream.');
+      document.getElementById('practice').value = selectedPractice;
       practiceScreen.style.display = 'none';
       appScreen.style.display = 'block';
+      document.getElementById('app-affiliation').textContent = selectedAff;
+      document.getElementById('app-practice').textContent = selectedPractice;
       // Optionally fetch weekly portion automatically
-      // fetch('/api/weekly', { method: 'POST' }).then(...)
     });
 
     // Q&A submission
