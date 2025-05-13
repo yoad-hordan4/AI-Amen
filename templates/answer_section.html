@@ -46,8 +46,7 @@
   {% if confidence is defined %}
     <div class="confidence">
       {# Cast confidence to float before multiplying and rounding #}
-      {% set conf_pct = (confidence | float) * 100 %}
-      <p><strong>Confidence:</strong> {{ conf_pct | round(0) }}%</p>
+      <p><strong>Confidence:</strong> {{ confidence }}</p>
     </div>
   {% endif %}
 </div>

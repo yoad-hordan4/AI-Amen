@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from core import get_halachic_answer, get_weekly_reading
+from core import get_halachic_answer, get_weekly_reading, hebrew_date
 from fastapi.staticfiles import StaticFiles
 import requests
 
@@ -13,10 +13,12 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/", response_class=HTMLResponse)
 async def get_form(request: Request):
     result = get_weekly_reading()
+    hd = hebrew_date()
     return templates.TemplateResponse("form.html", {
         "request": request,
         "parsha": result.get("parsha"),
-        "error": result.get("error")
+        "error": result.get("error"),
+        "hebrew_date": hd
     })
 
 

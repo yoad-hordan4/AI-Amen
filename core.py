@@ -5,7 +5,6 @@ import requests
 from datetime import date
 from dateutil.parser import isoparse
 from bs4 import BeautifulSoup
-
 import requests
 import logging
 from datetime import date, datetime
@@ -79,6 +78,41 @@ def find_portion():
 
     raise ValueError("No upcoming parsha found in Hebcal data")
 
+def hebrew_date():
+    """
+    Convert today's Gregorian date to Hebrew date using Hebcal API.
+    Returns the Hebrew date string (e.g. "כ"ו אייר תשפ"ה").
+    """
+    # Get today's date components
+    today = date.today()
+    greg_year = today.year
+    greg_month = today.month
+    greg_day = today.day
+
+    # Build URL with f-string and zero-padded month/day
+    url = (
+        f"https://www.hebcal.com/converter"
+        f"?cfg=json"
+        f"&date={greg_year}-{greg_month:02d}-{greg_day:02d}"
+        f"&g2h=1"
+    )
+    try:
+        resp = requests.get(url, timeout=10)
+        resp.raise_for_status()
+    except requests.RequestException as e:
+        logger.error(f"Failed to fetch Hebcal JSON: {e}")
+        raise ValueError(f"Could not reach Hebcal API: {e}")
+
+    data = resp.json()
+    # The API returns the Hebrew date in the 'hebrew' and 'hebrew_full' fields
+    hebrew = data.get("hebrew_full") or data.get("hebrew")
+    if not hebrew:
+        logger.error(f"No 'hebrew' field in Hebcal response: {data}")
+        raise ValueError("Hebcal response missing Hebrew date")
+
+    return hebrew
+
+
 
 def get_halachic_answer(question: str, affiliation: str) -> dict:
     sources = ", ".join(ALLOWED_SOURCES)
@@ -96,7 +130,7 @@ def get_halachic_answer(question: str, affiliation: str) -> dict:
                 {"role": "system", "content": "You are a knowledgeable assistant in Jewish law."},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=150,
+            max_tokens=250,
             temperature=0.5
         )
 
