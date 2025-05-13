@@ -2,122 +2,127 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RavGPT</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="container">
-    <!-- Show the Hebrew date at all times -->
-    <div class="hebrew-date">
-      📅 Hebrew date: {{ hebrew_date }}
-    </div>
-    <!-- Welcome Screen -->
-    <div id="welcome-screen">
-      <h1>Welcome to RavGPT</h1>
-      <button id="start-btn" class="btn">Get Started</button>
-    </div>
-
-    <!-- Affiliation Selection -->
-    <div id="affiliation-screen" style="display:none">
-      <h2>Select Your Affiliation</h2>
-      <select id="affiliation-select">
-        <option value="" disabled selected>-- Choose affiliation --</option>
-        <option value="Modern Orthodox">Modern Orthodox</option>
-        <option value="Yeshivish">Yeshivish</option>
-        <option value="Hasidic">Hasidic</option>
-      </select>
-      <button id="aff-next-btn" class="btn">Next</button>
-    </div>
-
-    <!-- Practice Stream Selection -->
-    <div id="practice-screen" style="display:none">
-      <h2>Select Your Practice Stream</h2>
-      <!-- Show chosen affiliation -->
-      <p><strong>Affiliation:</strong> <span id="display-affiliation"></span></p>
-      <select id="practice-select">
-        <option value="" disabled selected>-- Choose practice --</option>
-        <option value="Ashkenazi">Ashkenazi</option>
-        <option value="Sephardic">Sephardic</option>
-      </select>
-      <button id="practice-next-btn" class="btn">Continue</button>
-    </div>
-
-    <!-- Main App Screen -->
-    <div id="app-screen" style="display:none">
-      <!-- Show chosen settings -->
-      <p><strong>Affiliation:</strong> <span id="app-affiliation"></span> |
-         <strong>Practice Stream:</strong> <span id="app-practice"></span></p>
-
-      <!-- Weekly Portion Display -->
-      <div class="result" id="weekly-portion">
-        {% if parsha %}
-          <h2>This Week's Torah Portion:</h2>
-          <h3>{{ parsha.title_en }}{% if parsha.title_he %} – {{ parsha.title_he }}{% endif %}</h3>
-          <p>{{ parsha.summary or 'No summary available.' }}</p>
-          <a href="{{ parsha.sefaria_url }}" target="_blank" rel="noopener">Read on Sefaria »</a>
-        {% elif error %}
-          <p class="error">{{ error }}</p>
-        {% endif %}
+<body class="bg-gray-100 text-gray-800">
+  <div class="min-h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8 space-y-6">
+      <!-- Welcome Screen -->
+      <div id="welcome-screen" class="space-y-4">
+        <h1 class="text-4xl font-extrabold text-center">Welcome to RavGPT</h1>
+        <button id="start-btn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition">Get Started</button>
       </div>
 
-      <!-- Halacha Q&A Form -->
-      <form id="halacha-form">
-        <label for="user_question">Your Question:</label>
-        <textarea id="user_question" name="user_question" required></textarea>
-        <input type="hidden" id="community" name="community" value="">
-        <input type="hidden" id="practice" name="practice" value="">
-        <button type="submit" class="btn">Get Answer</button>
-      </form>
+      <!-- Affiliation Selection -->
+      <div id="affiliation-screen" class="hidden space-y-4">
+        <h2 class="text-2xl font-bold">Select Your Affiliation</h2>
+        <select id="affiliation-select" class="w-full py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="Modern Orthodox">Modern Orthodox</option>
+          <option value="Yeshivish">Yeshivish</option>
+          <option value="Hasidic">Hasidic</option>
+        </select>
+        <button id="affiliation-next-btn" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition">Next</button>
+      </div>
 
-      <!-- Answer Display -->
-      <div id="result" class="result" style="display:none;"></div>
+      <!-- Practice Selection -->
+      <div id="practice-screen" class="hidden space-y-4">
+        <h2 class="text-2xl font-bold">Select Your Practice</h2>
+        <div class="flex gap-4">
+          <button class="practice-btn flex-1 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition">Ashkenazi</button>
+          <button class="practice-btn flex-1 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition">Sephardic</button>
+        </div>
+      </div>
+
+      <!-- App Screen -->
+      <div id="app-screen" class="hidden space-y-6">
+        <div class="flex justify-between text-sm text-gray-600">
+          <span>Affiliation: <strong id="summary-affiliation"></strong></span>
+          <span>Practice: <strong id="summary-practice"></strong></span>
+        </div>
+
+        <!-- Hebrew Date -->
+        <div class="text-center text-gray-500">
+          📅 {{ hebrew_date }}
+        </div>
+
+        <!-- Weekly Portion -->
+        <div class="bg-gray-50 p-4 rounded-lg shadow-inner">
+          {% include "weekly_section.html" %}
+        </div>
+
+        <!-- Q&A Form -->
+        <form id="halacha-form" class="space-y-4">
+          <textarea id="user_question" name="user_question" rows="4" placeholder="Ask a halachic question..." required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+          <input type="hidden" id="community" name="community" />
+          <input type="hidden" id="practice" name="practice" />
+          <button type="submit" id="get-answer-btn" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition">Get Answer</button>
+        </form>
+
+        <!-- Loading Indicator -->
+        <div id="loading" class="hidden text-center text-indigo-600">Loading...</div>
+
+        <!-- Answer Result -->
+        <div id="result" class="hidden bg-white p-4 rounded-lg shadow-md space-y-4"></div>
+      </div>
     </div>
   </div>
 
   <script>
-    // Screen navigation
-    const welcome = document.getElementById('welcome-screen');
-    const affScreen = document.getElementById('affiliation-screen');
-    const practiceScreen = document.getElementById('practice-screen');
-    const appScreen = document.getElementById('app-screen');
-
-    let selectedAff = '';
-    let selectedPractice = '';
-
+    // Wizard navigation
     document.getElementById('start-btn').addEventListener('click', () => {
-      welcome.style.display = 'none';
-      affScreen.style.display = 'block';
+      toggle('welcome-screen', false);
+      toggle('affiliation-screen', true);
     });
 
-    document.getElementById('aff-next-btn').addEventListener('click', () => {
-      selectedAff = document.getElementById('affiliation-select').value;
-      if (!selectedAff) return alert('Please choose an affiliation.');
-      document.getElementById('community').value = selectedAff;
-      document.getElementById('display-affiliation').textContent = selectedAff;
-      affScreen.style.display = 'none';
-      practiceScreen.style.display = 'block';
+    document.getElementById('affiliation-next-btn').addEventListener('click', () => {
+      const aff = document.getElementById('affiliation-select').value;
+      document.getElementById('summary-affiliation').textContent = aff;
+      document.getElementById('community').value = aff;
+      toggle('affiliation-screen', false);
+      toggle('practice-screen', true);
     });
 
-    document.getElementById('practice-next-btn').addEventListener('click', () => {
-      selectedPractice = document.getElementById('practice-select').value;
-      if (!selectedPractice) return alert('Please choose a practice stream.');
-      document.getElementById('practice').value = selectedPractice;
-      practiceScreen.style.display = 'none';
-      appScreen.style.display = 'block';
-      document.getElementById('app-affiliation').textContent = selectedAff;
-      document.getElementById('app-practice').textContent = selectedPractice;
-      // Optionally fetch weekly portion automatically
+    document.querySelectorAll('.practice-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const practice = btn.textContent;
+        document.getElementById('summary-practice').textContent = practice;
+        document.getElementById('practice').value = practice;
+        toggle('practice-screen', false);
+        toggle('app-screen', true);
+      });
     });
 
-    // Q&A submission
-    document.getElementById('halacha-form').addEventListener('submit', async (e) => {
+    // Q&A submission with loading indicator
+    const form = document.getElementById('halacha-form');
+    form.addEventListener('submit', async e => {
       e.preventDefault();
-      const formData = new FormData(e.target);
-      const res = await fetch('/api/ask', { method: 'POST', body: formData });
-      if (!res.ok) return alert('Error: Unable to get the answer.');
-      document.getElementById('result').innerHTML = await res.text();
-      document.getElementById('result').style.display = 'block';
+      toggle('loading', true);
+      document.getElementById('get-answer-btn').disabled = true;
+      toggle('result', false);
+
+      const res = await fetch('/api/ask', { method: 'POST', body: new FormData(form) });
+      const html = await res.text();
+      document.getElementById('result').innerHTML = html;
+      toggle('loading', false);
+      toggle('result', true);
+      document.getElementById('get-answer-btn').disabled = false;
     });
+
+    // Enter key submits
+    document.getElementById('user_question').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+      }
+    });
+
+    // Utility to show/hide
+    function toggle(id, show) {
+      document.getElementById(id).classList.toggle('hidden', !show);
+    }
   </script>
 </body>
 </html>
