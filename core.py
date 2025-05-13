@@ -127,7 +127,7 @@ def get_halachic_answer(question: str, affiliation: str) -> dict:
         return "Portion not found"
 
 
-def get_weekly_reading():
+#def get_weekly_reading():
     try:
         portion = find_portion()
         return {"weekly_reading": f"This week’s Torah portion is: {portion}"}
@@ -138,3 +138,25 @@ def get_weekly_reading():
         return {"error": "Unexpected error fetching weekly portion"}
 
 
+def get_weekly_reading():
+    try:
+        raw = find_portion()
+        title_en, _, title_he = raw.partition(" – ")
+        details = get_parsha_details(title_en)
+        return {"parsha": details}
+    except Exception as e:
+        return {"error": str(e)}
+
+def get_parsha_details(parsha_title_en: str) -> dict:
+    # strip off the "Parashat " prefix, if present
+    slug = parsha_title_en.replace("Parashat ", "")
+    url = f"https://www.sefaria.org/api/index/{slug}"
+    resp = requests.get(url, timeout=5)
+    resp.raise_for_status()
+    data = resp.json()
+    return {
+        "title_en": data.get("title", parsha_title_en),
+        "title_he": data.get("heTitle", ""),
+        "summary": data.get("summary", ""),
+        "sefaria_url": f"https://www.sefaria.org/texts/Torah%2BPortions%2F{slug}"
+    }

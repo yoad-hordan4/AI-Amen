@@ -1,4 +1,14 @@
-<div class="result">
-    <h2>This Week's Torah Portion:</h2>
-    <p>{{ weekly_reading }}</p>  
-</div>
+<div class="result" id="weekly-portion">
+    {% if parsha %}
+      <h2>This Week's Torah Portion:</h2>
+      <h3>{{ parsha.title_en }}{% if parsha.title_he %} – {{ parsha.title_he }}{% endif %}</h3>
+      {% if parsha.summary %}
+        <p>{{ parsha.summary }}</p>
+      {% endif %}
+      <a href="{{ parsha.sefaria_url }}" target="_blank" rel="noopener">Read on Sefaria »</a>
+    {% else %}
+      <h2>This Week's Torah Portion:</h2>
+      <p>Error: {{ error }}</p>
+    {% endif %}
+  </div>
+  

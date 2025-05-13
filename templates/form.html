@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -8,6 +8,8 @@
 <body>
   <div class="container">
     <h1>Halacha Q&A</h1>
+
+    <!-- Q&A Form -->
     <form id="halacha-form">
       <label for="user_question">Question:</label>
       <textarea id="user_question" name="user_question" required></textarea>
@@ -22,47 +24,38 @@
       <button type="submit">Get Answer</button>
     </form>
 
+    <!-- Answer Section -->
     <div id="result" class="result" style="display: none;">
-      <!-- The answer will be dynamically inserted here -->
+      <!-- /api/ask will inject answer_section.html here -->
     </div>
 
-    <div id="weekly-portion" class="result">
-        <h2>This Weeks Portion is:</h2>
-        <p>{{ weekly_reading }}</p>
+    <!-- Weekly Portion Section -->
+    <div class="result" id="weekly-portion">
+      {% if parsha %}
+        <h2>This Week's Torah Portion:</h2>
+        <h3>{{ parsha.title_en }}{% if parsha.title_he %} – {{ parsha.title_he }}{% endif %}</h3>
+        {% if parsha.summary %}
+          <p>{{ parsha.summary }}</p>
+        {% endif %}
+        <a href="{{ parsha.sefaria_url }}" target="_blank" rel="noopener">Read on Sefaria »</a>
+      {% elif error %}
+        <h2>This Week's Torah Portion:</h2>
+        <p class="error">{{ error }}</p>
+      {% endif %}
     </div>
   </div>
 
   <script>
+    // Halacha Q&A handler
     document.getElementById("halacha-form").addEventListener("submit", async function(e) {
-      e.preventDefault();  // Prevent page reload
-
-      const form = e.target;
-      const formData = new FormData(form);
-
-      // Send the form data to the FastAPI endpoint
-      const response = await fetch("/api/ask", {
-        method: "POST",
-        body: formData
-      });
-
-      if (response.ok) {
-        const html = await response.text();
-        document.getElementById("result").innerHTML = html;  // Insert the response into the result section
-        document.getElementById("result").style.display = "block";  // Show the result section
-      } else {
-        alert("Error: Unable to get the answer.");
+      e.preventDefault();
+      const formData = new FormData(this);
+      const res = await fetch("/api/ask", { method: "POST", body: formData });
+      if (!res.ok) {
+        return alert(`Error ${res.status}: Unable to get the answer.`);
       }
-    });
-
-    document.getElementById("weekly-portion").addEventListener("click", async function() {
-        const response = await fetch("/api/weekly", {method: "POST"});
-        if(response.ok) {
-            const text = await response.text();
-            document.getElementById("weekly-portion").innerHTML = text;
-            document.getElementById("weekly-portion").style.display = "block";  // Make sure it's visible
-        } else {
-            alert("Error: Unable to get the weekly portion.");
-        }
+      document.getElementById("result").innerHTML = await res.text();
+      document.getElementById("result").style.display = "block";
     });
   </script>
 </body>
