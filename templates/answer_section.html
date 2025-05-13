@@ -1,13 +1,37 @@
 <div class="result">
-    <h2>Answer:</h2>
-    <p>{{ answer }}</p>
-  
-    <h3>Sources:</h3>
-    <ul>
-      {% for source in sources %}
-        <li><a href="https://{{ source }}" target="_blank">{{ source }}</a></li>
-      {% endfor %}
-    </ul>
-  
-    <p><strong>Confidence:</strong> {{ confidence }}</p>
+  <h2>Answer:</h2>
+  <div class="answer-content">
+    {% set in_list = false %}
+    {% for line in answer.split('\n') %}
+      {% if line.startswith('- ') %}
+        {% if not in_list %}
+          {% set in_list = true %}
+          <ul>
+        {% endif %}
+        <li>{{ line[2:] | replace('**', '<strong>') | replace('**', '</strong>') | safe }}</li>
+      {% else %}
+        {% if in_list %}
+          </ul>
+          {% set in_list = false %}
+        {% endif %}
+        {% if line.endswith(':') %}
+          <h3>{{ line[:-1] }}</h3>
+        {% elif line.strip() %}
+          <p>{{ line | replace('**', '<strong>') | replace('**', '</strong>') | safe }}</p>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+    {% if in_list %}
+      </ul>
+    {% endif %}
+  </div>
+
+  <h3>Sources:</h3>
+  <ul>
+    {% for source in sources %}
+      <li><a href="https://{{ source }}" target="_blank">{{ source }}</a></li>
+    {% endfor %}
+  </ul>
+
+  <p><strong>Confidence:</strong> {{ confidence }}</p>
 </div>
