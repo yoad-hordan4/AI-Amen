@@ -11,8 +11,11 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 async def get_form(request: Request):
-    # This will render the form directly
-    return templates.TemplateResponse("form.html", {"request": request})
+    weekly = get_weekly_reading().get("weekly_reading", "")
+    return templates.TemplateResponse("form.html", {
+        "request": request,
+        "weekly_reading": weekly
+    })
 
 @app.post("/api/ask", response_class=HTMLResponse)
 async def api_ask_halacha(request: Request, user_question: str = Form(...), community: str = Form(...)):
@@ -30,7 +33,8 @@ async def api_ask_halacha(request: Request, user_question: str = Form(...), comm
 async def api_get_weekly(request: Request):
     result = get_weekly_reading()
     return templates.TemplateResponse("weekly_section.html", {
-        "request": request,
+        "request": request,  
         "weekly_reading": result.get("weekly_reading", "Error fetching weekly portion")
     })
+
 
