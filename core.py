@@ -15,6 +15,8 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))  # Use env variable instead of hardcoded key
+ALLOWED_SOURCES = ["sefaria.org", "halachipedia.com", "shulchanaruch.org"]
+
 
 def estimate_confidence(answer: str) -> str:
     if any(phrase in answer.lower() for phrase in ["it depends", "possibly", "unclear", "some say", "might be"]):
@@ -26,6 +28,12 @@ def estimate_confidence(answer: str) -> str:
 
 def extract_citations(text: str) -> list:
     # Example: capture known source URLs or titles
+    
+    citations_used: list[str] = []
+    for source in ALLOWED_SOURCES:
+        if source in text.lower():
+            citations_used.append(source)
+    
     sources = []
     if "halachipedia" in text.lower():
         sources.append("halachipedia.com")
@@ -73,9 +81,10 @@ def find_portion():
 
 
 def get_halachic_answer(question: str, affiliation: str) -> dict:
+    sources = ", ".join(ALLOWED_SOURCES)
     try:
         prompt = (
-            f"You are a halachic assistant. Use certified sources like Halachipedia and Sefaria. "
+            f"You are a halachic assistant. Use certified sources only from {sources}. "
             f"Answer the following question from a {affiliation} perspective. "
             f"Provide a concise answer with clear citations, and try to use bullet points where helpful.\n\n"
             f"Question: {question}"
@@ -108,34 +117,6 @@ def get_halachic_answer(question: str, affiliation: str) -> dict:
 
     except Exception as e:
         return {"error": f"An error occurred: {str(e)}"}
-
-#def find_portion():
-    url = "https://aish.com/weekly-torah-portion"
-    response = requests.get(url)
-    if response.status_code == 200:
-        print("Successfully fetched the webpage!")
-    else:
-        print(f"Failed to fetch the webpage. Status code: {response.status_code}")
-        exit()
-    soup = BeautifulSoup(response.content, 'html.parser')
-    
-    parsha = soup.find('h3', class_="parsha-name")
-    if parsha:
-        parsha_web = parsha.get_text(strip=True)
-        return parsha_web
-    else:
-        return "Portion not found"
-
-
-#def get_weekly_reading():
-    try:
-        portion = find_portion()
-        return {"weekly_reading": f"This week’s Torah portion is: {portion}"}
-    except ValueError as ve:
-        return {"error": str(ve)}
-    except Exception:
-        logger.exception("Unexpected error in get_weekly_reading")
-        return {"error": "Unexpected error fetching weekly portion"}
 
 
 def get_weekly_reading():

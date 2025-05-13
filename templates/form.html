@@ -2,60 +2,106 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Halacha Q&A</title>
+  <title>RavGPT</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
   <div class="container">
-    <h1>Halacha Q&A</h1>
+    <!-- Welcome Screen -->
+    <div id="welcome-screen">
+      <h1>Welcome to RavGPT</h1>
+      <button id="start-btn" class="btn">Get Started</button>
+    </div>
 
-    <!-- Q&A Form -->
-    <form id="halacha-form">
-      <label for="user_question">Question:</label>
-      <textarea id="user_question" name="user_question" required></textarea>
-
-      <label for="community">Community:</label>
-      <select id="community" name="community">
+    <!-- Affiliation Selection -->
+    <div id="affiliation-screen" style="display:none">
+      <h2>Select Your Affiliation</h2>
+      <select id="affiliation-select">
+        <option value="" disabled selected>-- Choose affiliation --</option>
         <option value="Modern Orthodox">Modern Orthodox</option>
         <option value="Yeshivish">Yeshivish</option>
         <option value="Hasidic">Hasidic</option>
       </select>
-
-      <button type="submit">Get Answer</button>
-    </form>
-
-    <!-- Answer Section -->
-    <div id="result" class="result" style="display: none;">
-      <!-- /api/ask will inject answer_section.html here -->
+      <button id="aff-next-btn" class="btn">Next</button>
     </div>
 
-    <!-- Weekly Portion Section -->
-    <div class="result" id="weekly-portion">
-      {% if parsha %}
-        <h2>This Week's Torah Portion:</h2>
-        <h3>{{ parsha.title_en }}{% if parsha.title_he %} – {{ parsha.title_he }}{% endif %}</h3>
-        {% if parsha.summary %}
-          <p>{{ parsha.summary }}</p>
+    <!-- Practice Stream Selection -->
+    <div id="practice-screen" style="display:none">
+      <h2>Select Your Practice Stream</h2>
+      <select id="practice-select">
+        <option value="" disabled selected>-- Choose practice --</option>
+        <option value="Ashkenazi">Ashkenazi</option>
+        <option value="Sephardic">Sephardic</option>
+      </select>
+      <button id="practice-next-btn" class="btn">Continue</button>
+    </div>
+
+    <!-- Main App Screen -->
+    <div id="app-screen" style="display:none">
+      <!-- Weekly Portion Display -->
+      <div class="result" id="weekly-portion">
+        {% if parsha %}
+          <h2>This Week's Torah Portion:</h2>
+          <h3>{{ parsha.title_en }}{% if parsha.title_he %} – {{ parsha.title_he }}{% endif %}</h3>
+          <p>{{ parsha.summary or 'No summary available.' }}</p>
+          <a href="{{ parsha.sefaria_url }}" target="_blank" rel="noopener">Read on Sefaria »</a>
+        {% elif error %}
+          <p class="error">{{ error }}</p>
         {% endif %}
-        <a href="{{ parsha.sefaria_url }}" target="_blank" rel="noopener">Read on Sefaria »</a>
-      {% elif error %}
-        <h2>This Week's Torah Portion:</h2>
-        <p class="error">{{ error }}</p>
-      {% endif %}
+      </div>
+
+      <!-- Halacha Q&A Form -->
+      <form id="halacha-form">
+        <label for="user_question">Your Question:</label>
+        <textarea id="user_question" name="user_question" required></textarea>
+        <input type="hidden" id="community" name="community" value="">
+        <input type="hidden" id="practice" name="practice" value="">
+        <button type="submit" class="btn">Get Answer</button>
+      </form>
+
+      <!-- Answer Display -->
+      <div id="result" class="result" style="display:none;"></div>
     </div>
   </div>
 
   <script>
-    // Halacha Q&A handler
-    document.getElementById("halacha-form").addEventListener("submit", async function(e) {
+    // Screen navigation
+    const welcome = document.getElementById('welcome-screen');
+    const affScreen = document.getElementById('affiliation-screen');
+    const practiceScreen = document.getElementById('practice-screen');
+    const appScreen = document.getElementById('app-screen');
+
+    document.getElementById('start-btn').addEventListener('click', () => {
+      welcome.style.display = 'none';
+      affScreen.style.display = 'block';
+    });
+
+    document.getElementById('aff-next-btn').addEventListener('click', () => {
+      const aff = document.getElementById('affiliation-select').value;
+      if (!aff) return alert('Please choose an affiliation.');
+      document.getElementById('community').value = aff;
+      affScreen.style.display = 'none';
+      practiceScreen.style.display = 'block';
+    });
+
+    document.getElementById('practice-next-btn').addEventListener('click', () => {
+      const prac = document.getElementById('practice-select').value;
+      if (!prac) return alert('Please choose a practice stream.');
+      document.getElementById('practice').value = prac;
+      practiceScreen.style.display = 'none';
+      appScreen.style.display = 'block';
+      // Optionally fetch weekly portion automatically
+      // fetch('/api/weekly', { method: 'POST' }).then(...)
+    });
+
+    // Q&A submission
+    document.getElementById('halacha-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const formData = new FormData(this);
-      const res = await fetch("/api/ask", { method: "POST", body: formData });
-      if (!res.ok) {
-        return alert(`Error ${res.status}: Unable to get the answer.`);
-      }
-      document.getElementById("result").innerHTML = await res.text();
-      document.getElementById("result").style.display = "block";
+      const formData = new FormData(e.target);
+      const res = await fetch('/api/ask', { method: 'POST', body: formData });
+      if (!res.ok) return alert('Error: Unable to get the answer.');
+      document.getElementById('result').innerHTML = await res.text();
+      document.getElementById('result').style.display = 'block';
     });
   </script>
 </body>
