@@ -6,4 +6,5 @@ python-dotenv
 Jinja2
 python-dateutil
 requests
-
+python-multipart
+python-logging
