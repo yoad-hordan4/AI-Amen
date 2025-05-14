@@ -1,11 +1,8 @@
 fastapi
-uvicorn
+uvicorn[standard]
 pydantic
 openai
 python-dotenv
-templates
-jinja2
-dotenv
-datetime
-dateutil
-logging
+Jinja2
+python-dateutil
+requests
