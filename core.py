@@ -4,7 +4,6 @@ import os
 import requests
 from datetime import date
 from dateutil.parser import isoparse
-from bs4 import BeautifulSoup
 import requests
 import logging
 from datetime import date, datetime
