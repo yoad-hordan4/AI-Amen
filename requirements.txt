@@ -3,3 +3,9 @@ uvicorn
 pydantic
 openai
 python-dotenv
+templates
+jinja2
+dotenv
+datetime
+dateutil
+logging
