@@ -123,13 +123,14 @@ def hebrew_date():
 
 
 
-def get_halachic_answer(question: str, affiliation: str) -> dict:
+def get_halachic_answer(question: str, affiliation: str, lang: str = "en") -> dict:
     sources = ", ".join(ALLOWED_SOURCES)
+    lang_select = "Answer in Hebrew" if lang == "he" else "Answer in English"
     try:
         prompt = (
             f"You are a halachic assistant. Use certified sources only from {sources}. "
             f"Answer **only** from the {affiliation} perspective and **do not** mention or compare other customs. "
-            "Provide a concise, bullet-pointed answer with clear citations.\n\n"
+            "**{lang_select}** and Provide a concise, bullet-pointed answer with clear citations.\n\n"
             f"Question: {question}"
         )
 
@@ -137,7 +138,7 @@ def get_halachic_answer(question: str, affiliation: str) -> dict:
             model="gpt-4o-mini",  # Updated to your preferred model
             messages=[
                 {"role": "system", "content": "You are a knowledgeable assistant in Jewish law."},
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": prompt},
             ],
             max_tokens=250,
             temperature=0.5
