@@ -31,9 +31,12 @@ async def get_form(request: Request, lang: str = "en"):
 @app.post("/api/ask", response_class=HTMLResponse)
 async def api_ask(request: Request, user_question: str = Form(...), community: str = Form(...), lang: str = Form("en")):
     result = get_halachic_answer(user_question, community, lang)
+    zipped_sources = zip(result["sources_names"], result["sources"])
     return templates.TemplateResponse("answer_section.html", {
         "request": request,
         "answer": result["answer"],
+        "source_pairs": list(zipped_sources),
+        "sources_names": result["sources_names"],
         "sources": result["sources"],
         "confidence": result["confidence"],
         "lang": lang

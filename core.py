@@ -9,6 +9,7 @@ import logging
 from datetime import date, datetime
 import re
 logging.basicConfig(level=logging.INFO)
+from functionality import get_site_name
 
 logger = logging.getLogger(__name__)
 
@@ -145,10 +146,11 @@ def get_halachic_answer(question: str, affiliation: str, lang: str = "en") -> di
         )
 
         answer = response.choices[0].message.content.strip()
-
+        citations = extract_citations(answer)
         return {
             "answer": answer,
-            "sources": extract_citations(answer),
+            "sources_names": [get_site_name(source) for source in citations],
+            "sources": citations,
             "confidence": estimate_confidence(answer),
             "usage": {
                 "prompt_tokens": response.usage.prompt_tokens,
