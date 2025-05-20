@@ -7,6 +7,7 @@ from dateutil.parser import isoparse
 import requests
 import logging
 from datetime import date, datetime
+import re
 logging.basicConfig(level=logging.INFO)
 
 logger = logging.getLogger(__name__)
@@ -25,21 +26,30 @@ def estimate_confidence(answer: str) -> str:
         return "high"
 
 def extract_citations(text: str) -> list:
-    # Example: capture known source URLs or titles
-    
-    citations_used: list[str] = []
-    for source in ALLOWED_SOURCES:
-        if source in text.lower():
-            citations_used.append(source)
-    
-    sources = []
-    if "halachipedia" in text.lower():
-        sources.append("halachipedia.com")
-    if "sefaria" in text.lower():
-        sources.append("sefaria.org")
-    if "shulchan aruch" in text.lower():
-        sources.append("sefaria.org (Shulchan Aruch)")
-    return list(set(sources))
+    sources = set()
+
+    # Look for actual URLs in the response
+    urls = re.findall(r'https?://[^\s\)\]]+', text)
+    for url in urls:
+        if "halachipedia" in url:
+            sources.add("https://www.halachipedia.com")
+        elif "sefaria" in url:
+            sources.add("https://www.sefaria.org")
+        elif "shulchanaruch" in url or "shulchan_aruch" in url:
+            sources.add("https://www.sefaria.org/Shulchan_Aruch")
+
+    # Keyword triggers
+    text_lower = text.lower()
+    if "halachipedia" in text_lower or "הלכתפדיה" in text:
+        sources.add("https://www.halachipedia.com")
+    if "sefaria" in text_lower or "ספריא" in text:
+        sources.add("https://www.sefaria.org")
+    if "shulchan aruch" in text_lower or "שו\"ע" in text or "שולחן ערוך" in text:
+        sources.add("https://www.sefaria.org/Shulchan_Aruch")
+
+    return list(sources)
+
+
 
 def find_portion():
     url = (

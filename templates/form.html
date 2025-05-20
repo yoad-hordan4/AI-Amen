@@ -1,47 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ 'he' if lang == 'he' else 'en' }}" dir="{{ 'rtl' if lang == 'he' else 'ltr' }}">
 <head>
-  <meta name="google-adsense-account" content="ca-pub-1056169926227117">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RavGPT</title>
-  <!-- Tailwind via CDN -->
+  <title>{{ 'רב GPT' if lang == 'he' else 'RavGPT' }}</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-800">
   <div class="min-h-screen flex items-center justify-center p-6">
     <div class="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8 space-y-6">
+      
       <!-- Welcome Screen -->
       <div id="welcome-screen" class="space-y-4">
-        <h1 class="text-4xl font-extrabold text-center">Welcome to RavGPT</h1>
-        <button id="start-btn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition">Get Started</button>
+        <h1 class="text-4xl font-extrabold text-center">
+          {{ "ברוכים הבאים לרב GPT" if lang == "he" else "Welcome to RavGPT" }}
+        </h1>
+        <button id="start-btn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition">
+          {{ "התחל" if lang == "he" else "Get Started" }}
+        </button>
       </div>
 
       <!-- Affiliation Selection -->
       <div id="affiliation-screen" class="hidden space-y-4">
-        <h2 class="text-2xl font-bold">Select Your Affiliation</h2>
+        <h2 class="text-2xl font-bold">{{ "בחר זרם" if lang == "he" else "Select Your Affiliation" }}</h2>
         <select id="affiliation-select" class="w-full py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <option value="Modern Orthodox">Modern Orthodox</option>
-          <option value="Yeshivish">Yeshivish</option>
-          <option value="Hasidic">Hasidic</option>
+          <option value="Modern Orthodox">{{ "אורתודוקסיה" if lang == "he" else "Modern Orthodox" }}</option>
+          <option value="Yeshivish">{{ "בני ישיבה" if lang == "he" else "Yeshivish" }}</option>
+          <option value="Hasidic">{{ "חסידי" if lang == "he" else "Hasidic" }}</option>
         </select>
-        <button id="affiliation-next-btn" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition">Next</button>
+        <button id="affiliation-next-btn" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition">
+          {{ "המשך" if lang == "he" else "Next" }}
+        </button>
       </div>
 
       <!-- Practice Selection -->
       <div id="practice-screen" class="hidden space-y-4">
-        <h2 class="text-2xl font-bold">Select Your Practice</h2>
+        <h2 class="text-2xl font-bold">{{ "בחר מסורת" if lang == "he" else "Select Your Practice" }}</h2>
         <div class="flex gap-4">
-          <button class="practice-btn flex-1 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition">Ashkenazi</button>
-          <button class="practice-btn flex-1 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition">Sephardic</button>
+          <button class="practice-btn flex-1 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition">
+            {{ "אשכנזי" if lang == "he" else "Ashkenazi" }}
+          </button>
+          <button class="practice-btn flex-1 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition">
+            {{ "ספרדי" if lang == "he" else "Sephardic" }}
+          </button>
         </div>
       </div>
 
       <!-- App Screen -->
       <div id="app-screen" class="hidden space-y-6">
         <div class="flex justify-between text-sm text-gray-600">
-          <span>Affiliation: <strong id="summary-affiliation"></strong></span>
-          <span>Practice: <strong id="summary-practice"></strong></span>
+          <span>{{ "זרם:" if lang == "he" else "Affiliation:" }} <strong id="summary-affiliation"></strong></span>
+          <span>{{ "מסורת:" if lang == "he" else "Practice:" }} <strong id="summary-practice"></strong></span>
         </div>
 
         <!-- Hebrew Date -->
@@ -56,14 +65,22 @@
 
         <!-- Q&A Form -->
         <form id="halacha-form" class="space-y-4">
-          <textarea id="user_question" name="user_question" rows="4" placeholder="Ask a halachic question..." required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+          <textarea id="user_question" name="user_question" rows="4"
+            placeholder="{{ 'שאל שאלה הלכתית...' if lang == 'he' else 'Ask a halachic question...' }}"
+            required
+            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
           <input type="hidden" id="community" name="community" />
           <input type="hidden" id="practice" name="practice" />
-          <button type="submit" id="get-answer-btn" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition">Get Answer</button>
+          <input type="hidden" name="lang" value="{{ lang }}">
+          <button type="submit" id="get-answer-btn" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition">
+            {{ "קבל תשובה" if lang == "he" else "Get Answer" }}
+          </button>
         </form>
 
         <!-- Loading Indicator -->
-        <div id="loading" class="hidden text-center text-indigo-600">Loading...</div>
+        <div id="loading" class="hidden text-center text-indigo-600">
+          {{ "טוען..." if lang == "he" else "Loading..." }}
+        </div>
 
         <!-- Answer Result -->
         <div id="result" class="hidden bg-white p-4 rounded-lg shadow-md space-y-4"></div>
@@ -72,7 +89,6 @@
   </div>
 
   <script>
-    // Wizard navigation
     document.getElementById('start-btn').addEventListener('click', () => {
       toggle('welcome-screen', false);
       toggle('affiliation-screen', true);
@@ -96,7 +112,6 @@
       });
     });
 
-    // Q&A submission with loading indicator
     const form = document.getElementById('halacha-form');
     form.addEventListener('submit', async e => {
       e.preventDefault();
@@ -112,7 +127,6 @@
       document.getElementById('get-answer-btn').disabled = false;
     });
 
-    // Enter key submits
     document.getElementById('user_question').addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -120,7 +134,6 @@
       }
     });
 
-    // Utility to show/hide
     function toggle(id, show) {
       document.getElementById(id).classList.toggle('hidden', !show);
     }

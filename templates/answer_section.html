@@ -1,5 +1,5 @@
 <div class="result">
-  <h2>Answer:</h2>
+  <h2>{{ 'תשובה:' if lang == 'he' else 'Answer:' }}</h2>
   <div class="answer-content">
     {% set in_list = false %}
     {% for line in answer.split('\n') %}
@@ -31,7 +31,7 @@
   </div>
 
   <div class="sources-section">
-    <h3>Sources:</h3>
+    <h3>{{ 'מקורות:' if lang == 'he' else 'Sources:' }}</h3>
     {% if sources %}
       <ul>
         {% for src in sources %}
@@ -39,14 +39,13 @@
         {% endfor %}
       </ul>
     {% else %}
-      <p><em>No sources provided.</em></p>
+      <p><em>{{ 'לא סופקו מקורות.' if lang == 'he' else 'No sources provided.' }}</em></p>
     {% endif %}
   </div>
 
   {% if confidence is defined %}
     <div class="confidence">
-      {# Cast confidence to float before multiplying and rounding #}
-      <p><strong>Confidence:</strong> {{ confidence }}</p>
+      <p><strong>{{ 'רמת ביטחון:' if lang == 'he' else 'Confidence:' }}</strong> {{ confidence }}</p>
     </div>
   {% endif %}
 </div>

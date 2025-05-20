@@ -1,13 +1,21 @@
 <div id="weekly-portion-content" class="space-y-3">
     {% if parsha %}
-      <h3 class="text-lg font-semibold text-gray-800">This Week’s Torah Portion</h3>
-      <p class="text-xl font-bold text-gray-900">{{ parsha.title_en }}{% if parsha.title_he %} – {{ parsha.title_he }}{% endif %}</p>
+      <h3 class="text-lg font-semibold text-gray-800">
+        {{ 'פרשת השבוע' if lang == 'he' else 'This Week’s Torah Portion' }}
+      </h3>
+      <p class="text-xl font-bold text-gray-900">
+        {{ parsha.title_en }}{% if parsha.title_he %} – {{ parsha.title_he }}{% endif %}
+      </p>
       {% if parsha.summary %}
         <p class="text-gray-700">{{ parsha.summary }}</p>
       {% endif %}
-      <a href="{{ parsha.sefaria_url }}" target="_blank" rel="noopener" class="text-indigo-600 hover:underline font-medium">Read on Sefaria »</a>
+      <a href="{{ parsha.sefaria_url }}" target="_blank" rel="noopener" class="text-indigo-600 hover:underline font-medium">
+        {{ 'לקריאה בספריא »' if lang == 'he' else 'Read on Sefaria »' }}
+      </a>
     {% else %}
-      <p class="text-red-500">Error: {{ error or 'Unable to fetch parsha details.' }}</p>
+      <p class="text-red-500">
+        {{ 'שגיאה: לא ניתן לשלוף את פרטי הפרשה.' if lang == 'he' else 'Error: Unable to fetch parsha details.' }}
+      </p>
     {% endif %}
   </div>
   
