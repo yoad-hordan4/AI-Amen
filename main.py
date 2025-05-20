@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from core import get_halachic_answer, get_weekly_reading, hebrew_date
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 import requests
 
 app = FastAPI()
@@ -11,14 +12,27 @@ templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
-async def get_form(request: Request):
+async def redirect_to_language():
+    return RedirectResponse(url="/lang")
+
+
+@app.get("/lang", response_class=HTMLResponse)
+async def select_language(request: Request):
+    return templates.TemplateResponse("language_select.html", {"request": request})
+
+
+@app.get("/form", response_class=HTMLResponse)
+async def get_form(request: Request, lang: str = "en"):
     result = get_weekly_reading()
     hd = hebrew_date()
-    return templates.TemplateResponse("form.html", {
+    template = "form.html" if lang == "en" else "form_he.html"
+
+    return templates.TemplateResponse(template, {
         "request": request,
         "parsha": result.get("parsha"),
         "error": result.get("error"),
-        "hebrew_date": hd
+        "hebrew_date": hd,
+        "lang": lang
     })
 
 
@@ -42,5 +56,10 @@ async def api_get_weekly(request: Request):
     "parsha": result.get("parsha"),
     "error": result.get("error")
 })
+    
+@app.get("/lang", response_class=HTMLResponse)
+async def select_language(request: Request):
+    return templates.TemplateResponse("language_select.html", {"request": request})
+
 
 
