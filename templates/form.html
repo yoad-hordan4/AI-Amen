@@ -25,10 +25,12 @@
       <div id="affiliation-screen" class="hidden space-y-4">
         <h2 class="text-2xl font-bold">{{ "בחר זרם" if lang == "he" else "Select Your Affiliation" }}</h2>
         <select id="affiliation-select" class="w-full py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <option value="Modern Orthodox">{{ "אורתודוקסיה" if lang == "he" else "Modern Orthodox" }}</option>
+          <option value="Modern Orthodox">{{ "אורתודוקסיה מודרנית" if lang == "he" else "Modern Orthodox" }}</option>
           <option value="Yeshivish">{{ "בני ישיבה" if lang == "he" else "Yeshivish" }}</option>
           <option value="Hasidic">{{ "חסידי" if lang == "he" else "Hasidic" }}</option>
-        </select>
+          <option value="Chabad">{{ "חב״ד" if lang == "he" else "Hasidic - Chabad" }}</option>
+          <option value="Dati Leumi">{{ "דתי לאומי" if lang == "he" else "Dati Leumi" }}</option>
+        </select>        
         <button id="affiliation-next-btn" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition">
           {{ "המשך" if lang == "he" else "Next" }}
         </button>
@@ -50,7 +52,7 @@
       <!-- App Screen -->
       <div id="app-screen" class="hidden space-y-6">
         <div class="flex justify-between text-sm text-gray-600">
-          <span>{{ "זרם:" if lang == "he" else "Affiliation:" }} <strong id="summary-affiliation"></strong></span>
+          <span>{{ "זרם:" if lang == "he" else "Affiliation:" }}<strong id="summary-affiliation-display"></strong></span>
           <span>{{ "מסורת:" if lang == "he" else "Practice:" }} <strong id="summary-practice"></strong></span>
         </div>
 

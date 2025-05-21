@@ -6,14 +6,15 @@ from core import get_halachic_answer, get_weekly_reading, hebrew_date
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
-async def redirect_to_lang():
+async def redirect_to_language():
     return RedirectResponse(url="/lang")
 
 @app.get("/lang", response_class=HTMLResponse)
-async def choose_lang(request: Request):
+async def select_language(request: Request):
     return templates.TemplateResponse("language_select.html", {"request": request})
 
 @app.get("/form", response_class=HTMLResponse)
@@ -29,21 +30,25 @@ async def get_form(request: Request, lang: str = "en"):
     })
 
 @app.post("/api/ask", response_class=HTMLResponse)
-async def api_ask(request: Request, user_question: str = Form(...), community: str = Form(...), lang: str = Form("en")):
+async def api_ask_halacha(
+    request: Request,
+    user_question: str = Form(...),
+    community: str = Form(...),
+    lang: str = Form("en")
+):
     result = get_halachic_answer(user_question, community, lang)
-    zipped_sources = zip(result["sources_names"], result["sources"])
+    source_pairs = list(zip(result.get("sources_names", []), result.get("sources", [])))
+
     return templates.TemplateResponse("answer_section.html", {
         "request": request,
         "answer": result["answer"],
-        "source_pairs": list(zipped_sources),
-        "sources_names": result["sources_names"],
-        "sources": result["sources"],
         "confidence": result["confidence"],
+        "source_pairs": source_pairs,
         "lang": lang
     })
 
 @app.post("/api/weekly", response_class=HTMLResponse)
-async def api_weekly(request: Request, lang: str = Form("en")):
+async def api_get_weekly(request: Request, lang: str = Form("en")):
     result = get_weekly_reading()
     return templates.TemplateResponse("weekly_section.html", {
         "request": request,

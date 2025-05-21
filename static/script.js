@@ -28,13 +28,23 @@ document.getElementById('start-btn').addEventListener('click', () => {
   toggle('welcome-screen', false);
   toggle('affiliation-screen', true);
 });
-
+const affiliationTranslations = {
+    "Modern Orthodox": { en: "Modern Orthodox", he: "אורתודוקסיה מודרנית" },
+    "Yeshivish": { en: "Yeshivish", he: "בני ישיבה" },
+    "Hasidic": { en: "Hasidic", he: "חסידי" },
+    "Chabad": { en: "Hasidic - Chabad", he: "חב״ד" },
+    "Dati Leumi": { en: "Dati Leumi", he: "דתי לאומי" }
+};
+  
 document.getElementById('affiliation-next-btn').addEventListener('click', () => {
-  const aff = document.getElementById('affiliation-select').value;
-  document.getElementById('summary-affiliation').textContent = aff;
-  document.getElementById('community').value = aff;
-  toggle('affiliation-screen', false);
-  toggle('practice-screen', true);
+    const aff = document.getElementById('affiliation-select').value;
+    const translated = affiliationTranslations[aff]?.[lang] || aff;
+  
+    document.getElementById('summary-affiliation-display').textContent = translated;
+    document.getElementById('community').value = aff;
+  
+    toggle('affiliation-screen', false);
+    toggle('practice-screen', true);
 });
 
 document.querySelectorAll('.practice-btn').forEach(btn => {

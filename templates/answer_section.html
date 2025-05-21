@@ -32,11 +32,11 @@
 
   <div class="sources-section">
     <h3>{{ 'מקורות:' if lang == 'he' else 'Sources:' }}</h3>
-    {% if sources %}
+    {% if source_pairs %}
       <ul>
-        {% for name, src in source_pairs %}
+        {% for name, url in source_pairs %}
           <li>
-            <a href="{{ src }}" target="_blank" rel="noopener">{{name}} - {{ src }}</a>
+            <a href="{{ url }}" target="_blank" rel="noopener">{{ name }} – {{ url }}</a>
           </li>
         {% endfor %}
       </ul>
