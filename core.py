@@ -21,6 +21,26 @@ ALLOWED_SOURCES = [
     "halachayomit.co.il",
     "moreshet.co"
 ]
+AFFILIATION_SOURCES = {
+    "Chabad": [
+        "chabad.org", "asktherav.com", "sefaria.org", "halachipedia.com"
+    ],
+    "Yeshivish": [
+        "sefaria.org", "halachipedia.com", "shulchanaruch.org"
+    ],
+    "Modern Orthodox": [
+        "sefaria.org", "halachipedia.com", "shulchanaruch.org"
+    ],
+    "Dati Leumi": [
+        "sefaria.org", "halachipedia.com", "halachayomit.co.il"
+    ],
+    "Hasidic": [
+        "sefaria.org", "shulchanaruch.org"
+    ],
+    "Sephardic": [
+        "halachayomit.co.il", "moreshet.co", "sefaria.org"
+    ]
+}
 
 AFFILIATION_CONTEXTS = {
     "Chabad": "according to Chabad Hasidic halachic tradition",
@@ -135,7 +155,9 @@ def get_weekly_reading():
 
 
 def get_halachic_answer(question: str, affiliation: str, lang: str = "en") -> dict:
-    sources = ", ".join(ALLOWED_SOURCES)
+    allowed_sources = AFFILIATION_SOURCES.get(affiliation, ALLOWED_SOURCES)
+    sources = ", ".join(allowed_sources)
+
     language_instruction = "Answer in English." if lang == "en" else "ענה בעברית."
     affiliation_line = AFFILIATION_CONTEXTS.get(affiliation, f"from a {affiliation} halachic perspective")
 
@@ -146,7 +168,6 @@ def get_halachic_answer(question: str, affiliation: str, lang: str = "en") -> di
             f"{language_instruction} Provide a concise, bullet-pointed answer with clear citations.\n\n"
             f"Question: {question}"
         )
-
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[

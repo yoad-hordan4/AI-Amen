@@ -3,40 +3,76 @@ body {
     background-color: #f7f7f7;
     margin: 0;
     padding: 20px;
+    font-size: 1.5rem; /* BIGGER base font */
+    line-height: 1.8;
 }
 
 .container {
-    max-width: 600px;
+    max-width: 100%;
     background: white;
-    padding: 30px;
-    margin: auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 50px 30px; /* more padding for touch space */
+    margin: 0 auto;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
 textarea {
     width: 100%;
-    height: 100px;
-    margin-bottom: 10px;
+    height: 180px; /* taller text box */
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    padding: 16px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: 1px solid #ccc;
 }
 
 select, button {
     width: 100%;
-    padding: 10px;
-    margin-top: 10px;
+    padding: 18px;
+    font-size: 1.4rem;
+    margin-top: 16px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
 }
 
 .result {
-    margin-top: 30px;
-    padding: 20px;
-    border-top: 1px solid #ccc;
-    background: #f0f9ff;
+    margin-top: 40px;
+    padding: 28px;
+    border-top: 2px solid #ccc;
+    background: #eaf6ff;
+    font-size: 1.3rem;
+    border-radius: 12px;
 }
 
 .hebrew-date {
     text-align: center;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-    color: #555;
-  }
-  
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: #444;
+}
+
+/* Optional: reduce scale on desktops */
+@media (min-width: 768px) {
+    body {
+        font-size: 1.2rem;
+    }
+
+    .container {
+        max-width: 700px;
+        padding: 40px;
+    }
+}
